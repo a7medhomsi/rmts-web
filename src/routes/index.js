@@ -7,7 +7,7 @@ const DoctorController = require('../controllers/doctor-controller.js');
 const PostsController = require('../controllers/posts-controller.js');
 const GloveController = require('../controllers/glove-controller.js');
 const GloveAssigner = require('../controllers/assign-glove.js');
-
+const Appointment = require('../controllers/Appointment.js');
 // Auth routes
 router.post('/register', firebaseAuthController.registerUser);
 router.post('/login', firebaseAuthController.loginUser);
@@ -20,8 +20,9 @@ router.post('/gloves', GloveController.createGlove);
 router.put('/gloves/assign', GloveAssigner.assignGloveToPatient);
 router.get('/showPatients', (req, res) => GloveAssigner.getPatients(req, res));
 router.get('/showGloves', (req, res) => GloveAssigner.getGloves(req, res));
+router.get('/showAppointment', (req, res) => Appointment.Appointment(req, res));
 
-console.log('GloveController:', GloveAssigner);
+
 
 
 module.exports = router;

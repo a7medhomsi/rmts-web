@@ -1,4 +1,4 @@
-const { getFirestore, collection, addDoc,getDocs, doc,updateDoc, DocumentReference } = require("firebase/firestore");
+const { getFirestore, collection, addDoc,getDocs, getDoc,doc,updateDoc, DocumentReference } = require("firebase/firestore");
 const db = getFirestore();
 
 
@@ -48,10 +48,25 @@ class GloveAssigner {
       async getPatients(req, res) {
         try {
           const querySnapshot = await getDocs(collection(db, "patients"));
-          const patients = [];
-          querySnapshot.forEach((doc) => {
-            patients.push({ id: doc.id, ...doc.data() });
-          });
+          
+          // For each patient, fetch the corresponding user document and merge data.
+          const patients = await Promise.all(
+            querySnapshot.docs.map(async (patientDoc) => {
+              const patientData = patientDoc.data();
+              // Assuming the patient document ID corresponds to the user document ID
+              const userDocRef = doc(db, "users", patientDoc.id);
+              const userDoc = await getDoc(userDocRef);
+              const userData = userDoc.exists() ? userDoc.data() : {};
+              
+              // Merge patient data with the user's name (assuming it's stored as 'fullName' or 'name')
+              return {
+                id: patientDoc.id,
+                ...patientData,
+                fullName: userData.fullName || userData.name || "Unnamed Patient"
+              };
+            })
+          );
+    
           res.status(200).json(patients);
         } catch (error) {
           console.error("Error fetching patients list:", error);

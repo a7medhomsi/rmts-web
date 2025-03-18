@@ -38,7 +38,7 @@ class GloveController {
 
       // Store it in Firestore with an auto-generated ID
       const docRef = await addDoc(collection(db, "Gloves"), gloveData);
-      console.log(gloveId)
+      console.log(docRef.id)
 
       res.status(201).json({
         message: "Glove created successfully",
